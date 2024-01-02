@@ -39,11 +39,68 @@ const articles = [
     }
 ]
 
+//dichiarazione variabili globali/comuni
+const row = document.querySelector('.row');
+
+
+//funzione per l'assemblaggio della card dei filtri
+function creaFiltersCard(tags){
+
+    const cardFiltersMarkUp = `
+    <h1 class="text-center py-3">News Feed</h1>
+    <div class="card d-flex flex-row justify-content-between p-3">
+        <div class="filtro-tag">
+        <label for="tags">Filtra per tags:</label>
+        <select id="tags">
+            ${tags.map((tag) => creaOptions(tag))}
+        </select>
+        </div>
+        <div class="filtro-saved">
+            <input id="saved" type="checkbox">
+            <label for="saved">Solo news salvate</label>
+        </div>
+    </div>
+    `
+
+    row.insertAdjacentHTML('afterbegin', cardFiltersMarkUp);
+
+}
+
+
+//Creazione array vuoto di supporto
+let supportArray = [];
+
+//Creazione di un unico grande array, contenente i duplicati di tutti i tag presi dagli oggetti
+    articles.map((article) => {
+    
+    const tags = article.tags.split(', ');
+
+    supportArray = supportArray.concat(tags);
+
+    })
+
+//Applicazione di Set per scremare tutti i doppioni all'interno dell'array
+let definitiveArray = Array.from(new Set(supportArray));
+
+//richiamo la funzione DOPO la dichiarazione della variabile contenente il Set
+creaFiltersCard(definitiveArray);
+
+
+
+//funzione per la creazione del mark-up delle options
+function creaOptions(tag){
+
+    const optionMarkUp = `
+    <option>${tag}</option>
+    `
+
+    return optionMarkUp;
+
+}
+
 
 //funzione per l'assemblaggio della card
 function creaCard(title, content, author, published, img, tags){
-
-    const row = document.querySelector('.row');
     
     const cardMarkUp = `
     <div class="card p-3">
@@ -83,7 +140,6 @@ function creaTags(tags){
     return tagMarkup;
 
 }
-
 
 articles.forEach((article) => {
 
