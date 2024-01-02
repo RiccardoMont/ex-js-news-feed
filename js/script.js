@@ -40,7 +40,7 @@ const articles = [
 ]
 
 
-
+//funzione per l'assemblaggio della card
 function creaCard(title, content, author, published, img, tags){
 
     const row = document.querySelector('.row');
@@ -66,7 +66,7 @@ function creaCard(title, content, author, published, img, tags){
 }
 
 
-
+//funzione per creazione dei tag ed affibbiazione colore
 function creaTags(tags){
 
     const tagMarkup = `
@@ -74,8 +74,8 @@ function creaTags(tags){
         ${tags == 'geo' ? 'bg-primary'
         : tags == 'tech' ? 'bg-success'
         : tags == 'viaggi' ? 'bg-warning'
-        : tags == 'cucina' ? 'bg-info'
-        : tags == 'arte' ? 'bg-danger'
+        : tags == 'cucina' ? 'bg-danger'
+        : tags == 'arte' ? 'bg-info'
         : tags == 'politica' ? 'bg-dark'
         : 'bg-success-subtle'}
     rounded-3 me-2 text-white">${tags}</li>
@@ -85,14 +85,16 @@ function creaTags(tags){
 }
 
 
-
-
-
 articles.forEach((article) => {
 
+    //divisione dei tag nella stringa
     const tags = article.tags.split(', ');
 
-    creaCard(article.title, article.content, article.author, article.published, article.img, tags);
+    //divisione, inversione e separazione della stringa della data
+    const data = article.published.split('-').reverse().join('-');
+    
+    //creazione delle cards
+    creaCard(article.title, article.content, article.author, data, article.img, tags);
 
 })
 
