@@ -41,13 +41,10 @@ const articles = [
 
 
 
-
-
-
-function creaCard(title, content, author, published, img, ...tags){
+function creaCard(title, content, author, published, img, tags){
 
     const row = document.querySelector('.row');
-
+    
     const cardMarkUp = `
     <div class="card p-3">
         <div class="title d-flex justify-content-between align-items-center">
@@ -59,51 +56,43 @@ function creaCard(title, content, author, published, img, ...tags){
         <h6>${content}</h6>
         <img src="./m2_assets_newsfeed/images/${img}" alt="${img}">
         <ul class="tags d-flex list-unstyled mt-3 mb-0"> 
-        ${creaTags(tags)}
+        ${tags.map((tag) => creaTags(tag)).join('')}      
         </ul>
     </div>
     `
 
     row.insertAdjacentHTML('beforeend', cardMarkUp);
 
-
 }
 
-function creaTags(...tags){
-    console.log('sono qui');
+
+
+function creaTags(tags){
 
     const tagMarkup = `
-    <li class="py-1 px-2 bg-primary rounded-3 me-2 text-white">${tags}</li>
+    <li class="py-1 px-2 
+        ${tags == 'geo' ? 'bg-primary'
+        : tags == 'tech' ? 'bg-success'
+        : tags == 'viaggi' ? 'bg-warning'
+        : tags == 'cucina' ? 'bg-info'
+        : tags == 'arte' ? 'bg-danger'
+        : tags == 'politica' ? 'bg-dark'
+        : 'bg-success-subtle'}
+    rounded-3 me-2 text-white">${tags}</li>
     `;
-
     return tagMarkup;
 
 }
 
 
 
+
+
 articles.forEach((article) => {
 
-    console.log(article.tags);
+    const tags = article.tags.split(', ');
 
-    if(article.tags.includes(',')){
-
-        console.log('contiene la virgola');
-        const indexOfFirst = article.tags.indexOf(',');
-        const virgola = ',';
-        
-        const spicchio = article.tags.slice(0, indexOfFirst);
-        const secondoSpicchio = article.tags.slice(virgola, article.tags.indexOf(virgola, indexOfFirst+1));
-        console.log(spicchio);
-        console.log(secondoSpicchio);
-        console.log(article.tags);
-
-    } else {
-
-        console.log('Nada virgola');
-
-    }
-
-    creaCard(article.title, article.content, article.author, article.published, article.img, article.tags);
+    creaCard(article.title, article.content, article.author, article.published, article.img, tags);
 
 })
+
