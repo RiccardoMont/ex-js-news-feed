@@ -41,6 +41,7 @@ const articles = [
 
 //dichiarazione variabili globali/comuni
 const row = document.querySelector('.row');
+const bookmark = document.createElement('i');
 
 
 //funzione per l'assemblaggio della card dei filtri
@@ -80,10 +81,10 @@ let supportArray = [];
     })
 
 //Applicazione di Set per scremare tutti i doppioni all'interno dell'array
-let definitiveArray = Array.from(new Set(supportArray));
+let tagsNoDuplicate = Array.from(new Set(supportArray));
 
 //richiamo la funzione DOPO la dichiarazione della variabile contenente il Set
-creaFiltersCard(definitiveArray);
+creaFiltersCard(tagsNoDuplicate);
 
 
 
@@ -152,5 +153,19 @@ articles.forEach((article) => {
     //creazione delle cards
     creaCard(article.title, article.content, article.author, data, article.img, tags);
 
-})
+    //seleziono tutti i bookmarks di FontAwesome e rendo l'oggetto da html collection ad un array per poter poi applicare l'eventlistener
+    const bookmarks = document.getElementsByClassName('fa-2x');
+    const bookmarksArray = [...bookmarks];
 
+    //sfrutto l'id delle card come indice
+    const i = article.id - 1;
+
+    //applico ad ogni card la funzione toggle che intercambia le due icone di FontAwesome
+    bookmarksArray[i].addEventListener('click', function () {
+
+        bookmarksArray[i].classList.toggle('fa-regular');
+        bookmarksArray[i].classList.toggle('fa-solid');
+
+    })
+        
+})
