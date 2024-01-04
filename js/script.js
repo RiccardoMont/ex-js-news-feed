@@ -5,7 +5,7 @@ const articles = [
         id: '1',
         title: 'Scoperta di una nuova specie di papera di gomma',
         content: 'Scoperta di una nuova specie di papera di gomma.',
-        tags: 'geo, tech, politica', //aggiunto politica
+        tags: 'geo, tech', 
         author: 'Diana Rossi',
         published: '2023-02-11',
         img: 'rubber-duck.jpg'
@@ -41,7 +41,6 @@ const articles = [
 
 //dichiarazione variabili globali/comuni
 const row = document.querySelector('.row');
-const bookmark = document.createElement('i');
 
 
 //funzione per l'assemblaggio della card dei filtri
@@ -53,7 +52,9 @@ function creaFiltersCard(tags){
         <div class="filtro-tag">
         <label for="tags">Filtra per tags:</label>
         <select id="tags">
+            ${creaOptions('Tutti i tags')}
             ${tags.map((tag) => creaOptions(tag))}
+            ${creaOptions('politica')}
         </select>
         </div>
         <div class="filtro-saved">
@@ -104,7 +105,7 @@ function creaOptions(tag){
 function creaCard(title, content, author, published, img, tags){
     
     const cardMarkUp = `
-    <div class="card p-3">
+    <div class="card p-3 news">
         <div class="title d-flex justify-content-between align-items-center">
             <h2 class="mb-0 fw-bold">${title}</h2>
             <i class="fa-regular fa-2x fa-bookmark"></i>
@@ -167,5 +168,51 @@ articles.forEach((article) => {
         bookmarksArray[i].classList.toggle('fa-solid');
 
     })
-        
+
 })
+
+
+//selezione dell'elemento select
+const select = document.querySelector('select');
+
+//aggiunto evento 'change' sul select
+select.addEventListener('change', function () {
+
+    //selezione di tutte le cards
+    const cards = Array.from(document.querySelectorAll('.news'));  
+    
+        //ciclo per aggiungere e togliere il display-none in base alla selezione
+        for(let i = 0; i < articles.length; i++){
+                
+            const tags = articles[i].tags.split(', ');
+
+            if(tags.includes(select.value)){
+
+                cards[i].classList.remove('d-none');
+
+            } else if (select.value === 'Tutti i tags') {
+
+                cards[i].classList.remove('d-none');
+
+            } else {
+
+                cards[i].classList.add('d-none');              
+
+            }
+        
+        }
+
+        
+        //feedback per l'empty case
+        if(cards.every((card) => card.classList.contains('d-none'))){
+
+            const feedbackMarkUp = `
+            <h3 class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
+            `
+            
+            row.insertAdjacentHTML('beforeend', feedbackMarkUp);
+
+        }
+     
+})
+
