@@ -69,7 +69,8 @@ function creaFiltersCard(tags){
 }
 
 
-//Creazione array vuoto di supporto
+
+//Creazione array vuoto di supporto per i Tags
 let supportArray = [];
 
 //Creazione di un unico grande array, contenente i duplicati di tutti i tag presi dagli oggetti
@@ -102,10 +103,10 @@ function creaOptions(tag){
 
 
 //funzione per l'assemblaggio della card
-function creaCard(title, content, author, published, img, tags){
+function creaCard(id, title, content, author, published, img, tags){
     
     const cardMarkUp = `
-    <div class="card p-3 news">
+    <div class="card p-3 news" data-id="${id}">
         <div class="title d-flex justify-content-between align-items-center">
             <h2 class="mb-0 fw-bold">${title}</h2>
             <i class="fa-regular fa-2x fa-bookmark"></i>
@@ -152,7 +153,7 @@ articles.forEach((article) => {
     const data = article.published.split('-').reverse().join('-');
     
     //creazione delle cards
-    creaCard(article.title, article.content, article.author, data, article.img, tags);
+    creaCard(article.id, article.title, article.content, article.author, data, article.img, tags);
 
     //seleziono tutti i bookmarks di FontAwesome e rendo l'oggetto da html collection ad un array per poter poi applicare l'eventlistener
     const bookmarks = document.getElementsByClassName('fa-2x');
@@ -207,12 +208,40 @@ select.addEventListener('change', function () {
         if(cards.every((card) => card.classList.contains('d-none'))){
 
             const feedbackMarkUp = `
-            <h3 class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
+            <h3 id='empty' class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
             `
             
             row.insertAdjacentHTML('beforeend', feedbackMarkUp);
 
+
+        } 
+
+        //prendo la stringa dell'empty stampata per l'empty case della select tramite id
+        const empty = document.getElementById('empty')
+        
+        //rimuovo il feedback dell'empty case nel caso di una nuova ricerca che abbia riscontri
+        if((empty != null) && !(cards.every((card) => card.classList.contains('d-none')))){
+
+            empty.remove();
+        
         }
      
 })
 
+
+
+
+const checkbox = document.getElementById('saved');
+
+checkbox.addEventListener('change', function () {
+
+    if(checkbox.checked) {
+
+        console.log('salvati');
+
+    } else {
+
+        console.log('non solo salvati');
+
+    }
+})
