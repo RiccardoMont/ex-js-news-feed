@@ -1,4 +1,3 @@
-console.log('entra?');
 
 const articles = [
     {
@@ -40,7 +39,6 @@ const articles = [
 ]
 
 //dichiarazione variabili globali/comuni
-const container = document.querySelector('.container');
 const row = document.querySelector('.row');
 const main = document.createElement('main');
 
@@ -79,10 +77,8 @@ function creaFiltersCard(tags) {
 }
 
 
-//Creazione array vuoto di supporto per le savedCards e le discardedCards
+//Creazione array vuoto di supporto per le savedCards
 const savedCards = [];
-let discardedCards = [];
-
 
 //Creazione array vuoto di supporto per i Tags
 let supportArray = [];
@@ -101,7 +97,6 @@ let tagsNoDuplicate = Array.from(new Set(supportArray));
 
 //richiamo la funzione DOPO la dichiarazione della variabile contenente il Set
 creaFiltersCard(tagsNoDuplicate);
-
 
 
 //funzione per la creazione del mark-up delle options
@@ -158,207 +153,195 @@ function creaTags(tags) {
 
 }
 
+//Ciclo forEach per la creazione delle cards
 articles.forEach((article) => {
 
-    article.show = 'true';
-    article.saved = 'false';
-    //console.log(article.show);
-    //console.log(article);
-
-    //divisione dei tag nella stringa
-    const tags = article.tags.split(', ');
-
-    //divisione, inversione e separazione della stringa della data
-    const data = article.published.split('-').reverse().join('-');
-
-    //creazione delle cards
-    creaCard(article.id, article.title, article.content, article.author, data, article.img, tags);
+    creaCard(article.id, article.title, article.content, article.author, newDate(article.published), article.img, splitTags(article.tags));
 
 })
 
 
-//seleziono tutti i bookmarks di FontAwesome e rendo l'oggetto da html collection ad un array per poter poi applicare l'eventlistener
-const bookmarks = document.getElementsByClassName('fa-2x');
-const bookmarksArray = [...bookmarks];
+//Seleziono tutte le card tramite la classe 'news'
 const news = Array.from(document.getElementsByClassName('news'));
 
+/*Aggiunto l'eventListener ai bookmarks tramite event delegation*/
+mainEl.addEventListener('click', function(event) {
 
-for (let i = 0; i < articles.length; i++) {
+    const bookmark = event.target;
 
-    //applico ad ogni card la funzione toggle che intercambia le due icone di FontAwesome
-    bookmarksArray[i].addEventListener('click', function () {
+    if(bookmark.classList.contains('fa-2x')) {
 
-        bookmarksArray[i].classList.add('fa-solid');
+       bookmark.classList.remove('fa-regular');
+       bookmark.classList.add('fa-solid');
 
-        const dataId = news[i].getAttribute('data-id');
+       if(bookmark.classList.contains('fa-solid')){
 
-        if (bookmarksArray[i].classList.contains('fa-solid')) {
+        const dataId = bookmark.closest('.news').getAttribute('data-id');
+        savedCards.push(dataId);
 
-            savedCards.push(dataId);
-            articles[i].saved = 'true';
-            console.log(savedCards);
+       }
 
-        }
+    }
 
-    })
+})
+
+//Funzione per dividere i tags
+function splitTags(tags) {
+
+    return tags.split(', ');
+
+}
+
+//Funzione per riformattare la data
+function newDate(published){
+
+    return published.split('-').reverse().join('-');
+
+}
+
+/*Funzione contenente il markup dell'empty case*/
+function emptyMarkUp() {
+
+    const feedbackMarkUp = `
+        <h3 id='empty' class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
+        `
+
+    row.insertAdjacentHTML('beforeend', feedbackMarkUp);
 
 }
 
 
-//selezione dell'elemento select
+/*Funzione per verificare se la singola news contenga il 'd-none'*/
+function checkDNone(news) {
+
+    return news.classList.contains('d-none');
+
+}
+
+
+/*Funzione unica che filtra sia per il 'tipo' che per il 'salvataggio' con il bookmark*/
+function filtri() {
+    const selected = select.value;
+    const saved = checkbox.checked;
+    const empty = document.getElementById('empty');
+
+    /*Nel caso la checkbox sia smarcata*/
+    if (saved) {
+
+        /*Filtro che agisce sia per il select che per gli articoli salvati*/
+        const doubleFilter = articles.filter(article => {
+
+            const tags = article.tags.split(', ');
+            const index = article.id - 1;
+
+            if (!(savedCards.includes(article.id))) {
+                if (!(news[index].classList.contains('d-none')))
+
+                    news[index].classList.add('d-none');
+
+            } else {
+
+                if (tags.includes(selected)) {
+
+                    news[index].classList.remove('d-none');
+
+                } else if (selected === 'Tutti i tags') {
+
+                    news[index].classList.remove('d-none');
+
+                } else {
+
+                    news[index].classList.add('d-none');
+
+                }
+
+            }
+
+        })
+
+        /*Gestione dell'empty case*/
+        if ((savedCards.length === 0) && (empty !== null) && (!news.every(checkDNone))) {
+            
+            empty.remove();
+
+        }
+
+        if ((savedCards.length !== 0) && (empty !== null) && (!news.every(checkDNone))) {
+
+            empty.remove();
+
+        }
+
+        if ((savedCards.length === 0) && (empty === null)) {
+            
+            emptyMarkUp();
+
+        }
+
+        if ((savedCards.length !== 0) && (empty === null) && (news.every(checkDNone))) {
+
+            emptyMarkUp();
+
+        }
+
+    /*Nel caso la checkbox non sia smarcata*/
+    } else {
+        /*Filtro che agisce solo per il select*/
+        const selectFilter = articles.filter(article => {
+
+            const tags = article.tags.split(', ');
+            const index = article.id - 1;
+
+            if (tags.includes(selected)) {
+
+                news[index].classList.remove('d-none');
+
+            } else if (selected === 'Tutti i tags') {
+
+                news[index].classList.remove('d-none');
+
+            } else {
+
+                news[index].classList.add('d-none');
+
+            }
+
+        })
+
+        /*Gestione dell'empty case*/
+        if ((savedCards.length === 0) && (empty !== null)) {
+
+            empty.remove();
+
+        }
+
+        if (!(news.every(checkDNone)) && (empty !== null)) {
+
+            empty.remove();
+
+        }
+
+        if ((news.every(checkDNone)) && (empty !== null)){
+
+            return;
+
+        }
+        if (news.every(checkDNone)) {
+
+            emptyMarkUp();
+
+        }
+
+    }
+}
+
+
+//selezione dell'elemento select e checkbox
 const select = document.querySelector('select');
-
-//aggiunto evento 'change' sul select
-select.addEventListener('change', function () {
-
-
-    const filtratiSelect = articles.filter(article => {
-
-        const tags = article.tags.split(', ');
-        const id = article.id - 1;
-
-        if (tags.includes(select.value)) {
-
-            article.show = 'true';
-            console.log(article.id);
-            if (checkbox.checked) {
-                if (savedCards.includes(article.id)) {
-                    news[id].classList.remove('d-none');
-                }
-            } else {
-                savedCards.includes(article.id);
-                news[id].classList.remove('d-none');
-                console.log('entro in all');
-                console.log(news[id].classList);
-            }
-
-
-        } else if (select.value === 'Tutti i tags') {
-
-            article.show = 'true';
-
-            if (checkbox.checked) {
-                if (savedCards.includes(article.id)) {
-                    news[id].classList.remove('d-none');
-                }
-            } else {
-                savedCards.includes(article.id);
-                news[id].classList.remove('d-none');
-                console.log('entro in all');
-                console.log(news[id].classList);
-            }
-
-        } else {
-
-            article.show = 'false';
-            console.log('ig specifico');
-            //if(checkbox.checked && article.saved)
-            news[id].classList.add('d-none');
-
-
-        }
-
-        return article;
-    })
-
-
-    console.log(filtratiSelect);
-
-    /*
-    const giro = news.filter(singleNews => {
-
-        if(checkbox.checked){
-        
-            if()
-
-
-        }
-
-
-
-    })*/
-
-
-    //feedback per l'empty case
-    /*
-    if (news.every((singleNews) => singleNews.classList.contains('d-none'))) {
-
-        const feedbackMarkUp = `
-        <h3 id='empty' class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
-        `
-
-        row.insertAdjacentHTML('beforeend', feedbackMarkUp);
-
-
-    }
-
-    //prendo la stringa dell'empty case della select tramite id
-    const empty = document.getElementById('empty')
-
-    //rimuovo il feedback dell'empty case nel caso di una nuova ricerca che abbia riscontri
-    if ((empty != null) && !(news.every((singleNews) => singleNews.classList.contains('d-none')))) {
-
-        empty.remove();
-
-    }
-
-}*/
-
-})
-
-
-
-
 const checkbox = document.getElementById('saved');
 
-checkbox.addEventListener('change', function () {
-
-    const filtratiSaved = news.filter(singleNews => {
-
-        const dataId = singleNews.getAttribute('data-id');
-        const empty = document.getElementById('empty');
-
-        if (checkbox.checked) {
-            if (!(savedCards.includes(dataId))) {
-
-
-                singleNews.classList.add('d-none');
-                console.log(singleNews);
-                
-
-                if ((savedCards.length === 0) && (empty == null)) {
-                    const feedbackMarkUp = `
-                    <h3 id='empty' class='text-white'>Nessun elemento contiene i criteri di ricerca</h3>
-                    `
-
-                    row.insertAdjacentHTML('beforeend', feedbackMarkUp);
-                }
-
-
-            }
-
-            /*else if(!(savedCards.includes(dataId)) && singleNews.classList.contains('d-none')){
-
-            singleNews.classList.remove('d-none');
-
-        }*/
-
-
-
-            return singleNews;
-        } else {
-            singleNews.classList.remove('d-none');
-
-            if(empty != null){
-                empty.remove();
-            }
-
-            
-        }
-    })
-
-    console.log(filtratiSaved);
-
-})
+//aggiunto evento 'change' sul select e sulla checkbox
+select.addEventListener('change', filtri);
+checkbox.addEventListener('change', filtri);
 
 
