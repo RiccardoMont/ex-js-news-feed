@@ -44,7 +44,7 @@ const main = document.createElement('main');
 
 //Creazione del tag main per sfruttarlo come eventHandler
 main.setAttribute('id', 'siteMain');
-main.classList.add('px-0');
+main.classList.add('px-0', 'py-4');
 row.appendChild(main);
 const mainEl = document.getElementById('siteMain');
 
@@ -54,7 +54,7 @@ function creaFiltersCard(tags) {
 
     const cardFiltersMarkUp = `
     <header id="siteHeader" class="px-0">
-        <h1 class="text-center py-3">News Feed</h1>
+        <h1 class="text-center py-3 text-white">News Feed</h1>
         <div class="card d-flex flex-row justify-content-between p-3">
             <div class="filtro-tag">
             <label for="tags">Filtra per tags:</label>
@@ -115,7 +115,7 @@ function creaOptions(tag) {
 function creaCard(id, title, content, author, published, img, tags) {
 
     const cardMarkUp = `
-    <div class="card p-3 news" data-id="${id}">
+    <div class="card p-3 my-4 news" data-id="${id}">
         <div class="title d-flex justify-content-between align-items-center">
             <h2 class="mb-0 fw-bold">${title}</h2>
             <i class="fa-regular fa-2x fa-bookmark"></i>            
