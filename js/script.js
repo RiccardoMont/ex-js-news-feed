@@ -156,7 +156,10 @@ function creaTags(tags) {
 //Ciclo forEach per la creazione delle cards
 articles.forEach((article) => {
 
-    creaCard(article.id, article.title, article.content, article.author, newDate(article.published), article.img, splitTags(article.tags));
+    //Destructuring
+    const {id, title, content, author, published, img, tags} = article;
+
+    creaCard(id, title, content, author, newDate(published), img, splitTags(tags));
 
 })
 
