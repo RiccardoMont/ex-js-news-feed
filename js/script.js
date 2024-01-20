@@ -174,13 +174,18 @@ mainEl.addEventListener('click', function(event) {
 
     if(bookmark.classList.contains('fa-2x')) {
 
-       bookmark.classList.remove('fa-regular');
-       bookmark.classList.add('fa-solid');
+       bookmark.classList.toggle('fa-regular');
+       bookmark.classList.toggle('fa-solid');
+       const dataId = bookmark.closest('.news').getAttribute('data-id');
 
        if(bookmark.classList.contains('fa-solid')){
 
-        const dataId = bookmark.closest('.news').getAttribute('data-id');
         savedCards.push(dataId);
+
+       } else {
+
+        const unsaveCard = savedCards.indexOf(dataId);
+        savedCards.splice(unsaveCard, 1);
 
        }
 
